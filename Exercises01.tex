@@ -1,0 +1,163 @@
+﻿\input SDS383Dformat.tex
+
+\pdfpagewidth=8.5true in
+\pdfpageheight=11true in
+
+\usefontTNR
+
+\noindent\rlap{SDS 383D}\hfill Chapter 1 Exercises\hfill\llap{Jesse Miller}\vskip2pt\hrule
+
+
+\largeskip\noindent{\bf Bayesian inference in simple conjugate families}
+
+%1/23/2017
+
+\largeskip\noindent{\bf A)} Let $\vecx\eqdef\tuple{x_1,\ldots,x_N}$, and let $k$ denote the number of successes in $\vecx$.  Then
+$$\eqalign{
+	p(w|\vecx)&\propto p(\vecx|w)p(w)\cr
+		&\propto w^k(1-w)^{N-k}w^{a-1}(1-w)^{b-1}\cr
+		&=w^{a+k-1}(1-w)^{b+(n-k)-1},\cr
+}$$
+which is the kernel of a Beta distribution with parameters $a+k-1$ and $b+(n-k)-1$.  Thus, the posterior distribution is Beta$\bigparens{a+k-1,b+(n-k)-1}$.
+
+
+\largeskip\noindent{\bf B)} Let
+$$
+	Y_1={X_1\over X_1+X_2}\qquad\hbox{and}\qquad Y_2=X_1+X_2.
+$$
+Then, solving for $X_1$ and $X_2$ in terms of $Y_1$ and $Y_2$, we get
+$$
+	X_1=Y_1Y_2\qquad\hbox{and}\qquad X_2=(1-Y_1)Y_2.
+$$
+Since we want to find the joint density of $Y_1$ and $Y_2$, we start by finding the Jacobian of the transformation:
+$$\eqalign{
+	J&=\determinant{\partial x_1/\partial y_1&\partial x_1/\partial y_2\cr\partial x_2/\partial y_1&\partial x_2/\partial y_2}\cr
+		\noalign{\vskip6pt}
+		&=\determinant{y_2&y_1\cr -y_2&1-y_1}\cr
+		\noalign{\vskip6pt}
+		&=y_2(1-y_1)+y_1y_2\cr
+		\noalign{\vskip6pt}
+		&=y_2.
+}$$
+Note that since $X_1$ and $X_2$ are never negative, neither is $Y_2$, and therefore $\abs{J}=J$.  We can now express the joint distribution function in terms of $f_{X_1,X_2}$ as follows:
+$$\eqalign{
+	f_{Y_1,Y_2}(y_1,y_2)&\propto(y_1y_2)^{a_1-1}\cdot e^{-y_1y_2}\bigparens{(1-y_1)y_2}^{a_2-1}\cdot e^{-(1-y_1)y_2}\cdot y_2\cr
+		\noalign{\vskip6pt}
+		&=\Bigparens{y_1^{a_1-1}(1-y_1)^{a_2-1}}\Bigparens{y_2^{a_1+a_2-1}\cdot e^{-y_2}}\cr
+}$$
+where the expression in the first pair of parentheses is the kernel of a Beta distribution and that in the second is the kernel of a Gamma distribution.  We therefore see that
+$$
+	y_1\sim\hbox{Beta}(a_1,a_2)\qquad\hbox{and}\qquad y_2\sim\hbox{Gamma}(a_1+a_2,1).
+$$
+This provides us with a means to simulate a Beta random variable with parameters $a_1$ and $a_2$ from Gamma random variables by simulating $X_1\sim\hbox{Gamma}(a_1,1)$ and $X_2\sim\hbox{Gamma}(a_2,1)$, and then computing the ratio $X_1/(X_1+X_2)$.
+
+
+
+\PageBreak\noindent{\bf C)} Let $X_i\sim N(\theta,\sigma^2)$ be independent where the variance is known and $\theta\sim N(m,v)$.  Let $\bar x$ denote the mean of $x_1,\ldots,x_N$. Then
+$$\eqalign{
+	p(\theta|x_1,\ldots,x_N)&\propto p(x_1,\ldots,x_N|\theta)p(\theta)\cr
+		\noalign{\vskip9pt}
+		&=\Biggparens{\thinspace\prod_{i=1}^Np(x_i|\theta)}p(\theta)\cr
+		\noalign{\vskip9pt}
+		&\propto\exp\Biggparens{-\sum_{i=1}^N{(x_i-\theta)^2\over2\sigma^2}}\exp\biggparens{{-(\theta-m)^2\over2v}}\cr
+		\noalign{\vskip9pt}
+		&\propto\exp\Biggparens{\sum_{i=1}^N{2\theta x_i-\theta^2\over2\sigma^2}}\exp\biggparens{-{\theta^2-2\theta m\over2v}}\cr
+		\noalign{\vskip9pt}
+		&=\exp\biggparens{{2\theta n\bar x -n\theta^2\over2\sigma^2}-{\theta^2-2\theta m\over2v}}\cr
+		\noalign{\vskip9pt}
+		&=\exp\Biggparens{-\biggparens{{n\over2\sigma^2}+{1\over2v}}\theta^2+\biggparens{{n\bar x\over\sigma^2}+{m\over v}}\theta}\cr
+}$$
+This last expression is complicated, but has the form $e^{-A\theta^2+B\theta}$, with which we can work until it is further simplified.  Note that we still only care about things proportional to the expression involving $\theta$.
+$$\eqalign{
+	\exp\bigparens{-A\theta^2+B\theta}&=\exp\biggparens{{-\theta^2+(B/A)\theta\over1/A}}\cr
+		\noalign{\vskip9pt}
+		&\propto\exp\Biggparens{{-\bigparens{\theta-(B/2A)}^2\over1/A}}\cr
+}$$
+This is the kernel of a normal distribution with mean and variance as follows:
+$$\eqalign{
+	\mu_{\hbox{post}}&={B\over2A}={\enspace\displaystyle{n\bar x\over\sigma^2}+{m\over v}\enspace\over{\enspace\displaystyle{n\over\sigma^2}+{1\over v}}\enspace}\cr
+	\noalign{\vskip12pt}
+	\sigma^2_{\hbox{post}}&={1\over2A}={1\over{\enspace\displaystyle{n\over\sigma^2}+{1\over v}}\enspace}
+}$$
+
+
+
+
+
+
+
+\PageBreak\noindent{\bf D)} Let $X_i\sim N(\theta,\sigma^2)$ be independent where the mean $\theta$ is known and $w\eqdef1/\sigma^2\sim\hbox{Gamma}(a,b)$.  Let $\hat\sigma^2$ denote the standard deviation of $x_1,\ldots,x_N$. Then
+$$\eqalign{
+	p(w|x_1,\ldots,x_N)&\propto p(x_1,\ldots,x_N|w)p(w)\cr
+		\noalign{\vskip9pt}
+		&=\Biggparens{\thinspace\prod_{i=1}^Np(x_i|w)}p(w)\cr
+		\noalign{\vskip9pt}
+		&\propto w^{1/2}\exp\Biggparens{{-w\over2}\sum_{i=1}^N(x_i-\theta)^2}w^{a-1}\exp(-bw)\cr
+		\noalign{\vskip9pt}
+		&=w^{a-1/2}\exp\bigparens{-w\cdot N\hat\sigma^2/2}\exp(-bw)\cr
+		\noalign{\vskip9pt}
+		&=w^{a-1/2}\exp\bigparens{-(N\hat\sigma^2/2+b)w}.\cr
+}$$
+This is the kernel of a Gamma distribution, namely $\hbox{Gamma}\bigparens{a+1/2,b+N\hat\sigma^2/2}$.  Thus, the posterior distribution for $\sigma^2$ is $\hbox{IG}\bigparens{a+1/2,b+N\hat\sigma^2/2}$
+
+
+
+\largeskip\noindent{\bf E)} Let $X_i\sim N(\theta,\sigma_i^2)$ be independent where each $\sigma_i^2$ is known and $\theta\sim N(m,v)$.  Then
+$$\eqalign{
+	p(\theta|x_1,\ldots,x_N)&\propto p(x_1,\ldots,x_N|\theta)p(\theta)\cr
+		\noalign{\vskip9pt}
+		&=\Biggparens{\thinspace\prod_{i=1}^Np(x_i|\theta)}p(\theta)\cr
+		\noalign{\vskip9pt}
+		&\propto\exp\Biggparens{-\sum_{i=1}^N{(x_i-\theta)^2\over2\sigma_i^2}}\exp\biggparens{{-(\theta-m)^2\over2v}}\cr
+		\noalign{\vskip9pt}
+		&\propto\exp\Biggparens{-\sum_{i=1}^N{\theta^2-2x_i\theta\over\sigma_i^2}}\exp\biggparens{{-(\theta^2-2m\theta)\over2v}}\cr
+		\noalign{\vskip9pt}
+		&=\exp\Biggparens{-{\theta^2-2m\theta\over2v}-\sum_{i=1}^N{\theta^2-2x_i\theta\over\sigma_i^2}}\cr
+		\noalign{\vskip9pt}
+		&=\exp\Biggparens{-\biggparens{{1\over2v}+\sum_{i=1}^N{1\over2\sigma_i^2}}\theta^2+\biggparens{{m\over v}+\sum_{i=1}^N{x_i\over\sigma_i^2}}\theta}\cr
+}$$
+As in (C) above, this has the form $e^{-A\theta^2+B\theta}$, and we solve this in the same way.  Thereby we find that $\theta|x_1,\ldots,x_N$ is normally distributed with mean and variance given by
+$$\eqalign{
+	\mu_{\hbox{post}}&={\enspace\displaystyle{m\over v}+{\sum_{i=1}^N{x_i\over\sigma_i^2}}\enspace\over{\enspace\displaystyle{{1\over v}+\sum_{i=1}^N{1\over\sigma_i^2}}}\enspace}\cr
+	\noalign{\vskip12pt}
+	\sigma^2_{\hbox{post}}&={1\over{\enspace\displaystyle{{1\over v}+\sum_{i=1}^N{1\over\sigma_i^2}}}\enspace}\cr
+}$$
+
+
+
+
+
+\PageBreak\noindent{\bf F)}
+
+
+
+
+\PageBreak\noindent{\bf The multivariate normal distribution}
+
+
+\largeskip\noindent{\bf A)}
+$$\eqalign{
+	\cov(x)&\eqdef E\bigparens{(x-\mu)(x-\mu)^T}\cr
+		&=E\bigparens{(x-\mu)(x^T-\mu^T)}\cr
+		&=E\bigparens{xx^T-\mu x^T-x\mu^T+\mu\mu^T}\cr
+		&=E\bigparens{xx^T}-E\bigparens{\mu x^T}-E\bigparens{x\mu^T}+E\bigparens{\mu\mu^T}\cr
+		&=E\bigparens{xx^T}-\mu E\bigparens{x^T}-E\bigparens{x}\mu^T+\mu\mu^TE(I_N)\cr
+		&=E\bigparens{xx^T}-\mu\mu^T-\mu\mu^T+\mu\mu^T\cr
+		&=E\bigparens{xx^T}-\mu\mu^T\cr
+}$$
+
+\bigskip
+
+$$\eqalign{
+	\cov(Ax+b)&\eqdef E\Bigparens{\bigparens{Ax+b-E(Ax+b)}\bigparens{Ax+b-E(Ax+b)}^T}\cr
+		&=E\Bigparens{\bigparens{Ax-E(Ax)}\bigparens{Ax-E(Ax)}^T}\cr
+		&=E\Bigparens{A(x-\mu)\bigparens{A(x-\mu)}^T}\cr
+		&=E\Bigparens{A(x-\mu)(x-\mu)^TA^T}\cr
+		&=AE\Bigparens{(x-\mu)(x-\mu)^T}A^T\cr
+		&=A\cov(x)A^T\cr
+}$$
+
+
+
+
+\bye
